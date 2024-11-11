@@ -1,0 +1,120 @@
+[
+  {
+    "@context": "https://schema.org/",
+    "@type": "Dataset",
+    "_id": "zenodo_1112341",
+    "author": [
+      {
+        "affiliation": {
+          "name": "University Grenoble-Alpes, LECA, 2233 Rue de la Piscine, 38041 Grenoble Cedex 9, France"
+        },
+        "identifier": "0000-0002-2885-2518",
+        "name": "François Munoz"
+      },
+      {
+        "affiliation": {
+          "name": "Anses, Laboratoire de la Santé des Végétaux, Unité Entomologie et Plantes invasives, Montpellier, France"
+        },
+        "identifier": "0000-0002-3653-195X",
+        "name": "Guillaume Fried"
+      },
+      {
+        "affiliation": {
+          "name": "FiBL, Research Institute of Organic Agriculture"
+        },
+        "identifier": "0000-0002-9820-9667",
+        "name": "Laura Armengot"
+      },
+      {
+        "affiliation": {
+          "name": "Agroécologie, AgroSup Dijon, INRA"
+        },
+        "identifier": "0000-0002-2885-2518",
+        "name": "Bérenger Bourgeois"
+      },
+      {
+        "affiliation": {
+          "name": "Centre d'Etudes Biologiques de Chizé"
+        },
+        "name": "Vincent Bretagnolle"
+      },
+      {
+        "name": "Joël Chadoeuf"
+      },
+      {
+        "affiliation": {
+          "name": "Agroécologie, AgroSup Dijon, INRA"
+        },
+        "identifier": "0000-0002-5825-3807",
+        "name": "Lucie Mahaut"
+      },
+      {
+        "name": "Christine Plumejeaud"
+      },
+      {
+        "affiliation": {
+          "name": "Rothamsted Research"
+        },
+        "name": "Jonathan Storkey"
+      },
+      {
+        "affiliation": {
+          "name": "CNRS, Centre d'Ecologie Fonctionnelle et Evolutive"
+        },
+        "name": "Cyrille Violle"
+      },
+      {
+        "affiliation": {
+          "name": "Agroécologie, AgroSup Dijon, INRA"
+        },
+        "name": "Sabrina Gaba"
+      }
+    ],
+    "curatedBy": {
+      "@type": "Organization",
+      "name": "Zenodo",
+      "url": "https://zenodo.org/",
+      "versionDate": "2024-10-02"
+    },
+    "date": "2020-01-24",
+    "dateModified": "2020-01-24",
+    "datePublished": "2017-12-18T00:00:00",
+    "description": "The database includes a list of 1577 weed plant taxa found in cultivated fields of France and UK, along with basic ecological and biogeographical information.\nThe database is a CSV file in which the columns are separated with comma, and the decimal sign is \".\".\nIt can be imported in R with the command \"tax.discoweed <- read.csv(\"tax.discoweed_18Dec2017_zenodo.csv\", header=T, sep=\",\",  dec=\".\", stringsAsFactors = F)\"\n\n\nTaxonomic information is based on TaxRef v10 (Gargominy et al. 2016),\n- 'taxref10.CD_REF' = code of the accepted name of the taxon in TaxRef,\n- 'binome.discoweed' = corresponding latine name,\n- 'family' = family name (following APG III),\n- 'taxo' = taxonomic rank of the taxon, either 'binome' (species level) or 'infra' (infraspecific level),\n- 'binome.discoweed.noinfra' = latine name of the superior taxon at species level (different from 'binome.discoweed' for infrataxa),\n- 'taxref10.CD_REF.noinfra' = code of the accepted name of the superior taxon at species level.\n\n\nThe presence of each taxon in one or several of the following data sources is reported:\n- Species list from a reference flora (observations in cultivated fields over the long term, without sampling protocol),\n* 'jauzein' =  national and comprehensive flora in France (Jauzein 1995),\n- Species lists from plot-based inventories in cultivated fields,\n* 'za' = regional survey in 'Zone Atelier Plaine & Val de Sèvre' in SW France (Gaba et al. 2010),\n* 'biovigilance' = national survey of cultivated fields in France (Biovigilance, Fried et al. 2008),\n* 'fse' = Farm Scale Evaluations in England and Scotland, UK (Perry, Rothery, Clark et al., 2003),\n* 'farmbio' = Farm4Bio survey, farms in south east and south west of England, UK (Holland et al., 2013)\n- Reference list of segetal species (species specialist of arable fields),\n* 'cambacedes' = reference list in France (Cambacedes et al. 2002)\n\n\nLife form information is extracted from Julve (2014) and provided in the column 'lifeform'.\nThe classification follows a simplified Raunkiaer classification (therophyte, hemicryptophyte, geophyte, phanerophyte-chamaephyte and liana). Regularly biannual plants are included in hemicryptophytes, while plants that can be both annual and biannual are assigned to therophytes.\n\n\nBiogeographic zones are also extracted from Julve (2014) and provided in the column 'biogeo'.\nThe main categories are 'atlantic', 'circumboreal', 'cosmopolitan, 'Eurasian', 'European', 'holarctic', 'introduced', 'Mediterranean', 'orophyte' and 'subtropical'.\nIn some cases, a precision is included within brackets after the category name. For instance, 'introduced(North America)' indicates that the taxon is introduced from North America.\nIn addition, some taxa are local endemics ('Aquitanian', 'Catalan', 'Corsican', 'corso-sard', 'ligure', 'Provencal').\nA single taxon is classified 'arctic-alpine'.\n\n\nRed list status of weed taxa is derived for France and UK:\n- 'red.FR' is the status following the assessment of the French National Museum of Natural History (2012),\n- 'red.UK' is based on the Red List of vascular plants of Cheffings and Farrell (2005), last updated in 2006.\nThe categories are coded following the IUCN nomenclature.\n\n\nA habitat index is provided in column 'module', derived from a network-based analysis of plant communities in open herbaceous vegetation in France (Divgrass database, Violle et al. 2015, Carboni et al. 2016).\nThe main habitat categories of weeds are coded following the Divgrass classification,\n- 1 = Dry calcareous grasslands\n- 3 = Mesic grasslands\n- 5 = Ruderal and trampled grasslands\n- 9 = Mesophilous and nitrophilous fringes (hedgerows, forest edges...)\nTaxa belonging to other habitats in Divgrass are coded 99, while the taxa absent from Divgrass have a 'NA' value.\n\n\nTwo indexes of ecological specialization are provided based on the frequency of weed taxa in different habitats of the Divgrass database.\nThe indexes are network-based metrics proposed by Guimera and Amaral (2005),\n- c = coefficient of participation, i.e., the propensity of taxa to be present in diverse habitats, from 0 (specialist, present in a single habitat) to 1 (generalist equally represented in all habitats),\n- z = within-module degree, i.e., a standardized measure of the frequency of a taxon in its habitat; it is negatve when the taxon is less frequent than average in this habitat, and positive otherwise; the index scales as a number of standard deviations from the mean.",
+    "distribution": [
+      {
+        "contentUrl": "https://zenodo.org/api/records/1112342/files-archive",
+        "dateModified": "2020-01-24"
+      }
+    ],
+    "doi": "10.5281/zenodo.1112341",
+    "identifier": "zenodo.1112341",
+    "inLanguage": {
+      "name": "eng"
+    },
+    "includedInDataCatalog": {
+      "@type": "Organization",
+      "name": "Zenodo",
+      "url": "https://zenodo.org/",
+      "versionDate": "2024-10-02"
+    },
+    "keywords": [
+      "species pool",
+      "cultivated fields",
+      "specialization",
+      "biodiversity decline",
+      "sampling strategies"
+    ],
+    "license": "https://creativecommons.org/licenses/by/4.0/legalcode",
+    "name": "Database of weeds in cultivation fields of France and UK, with ecological and biogeographical information",
+    "sameAs": [
+      "https://zenodo.org/records/1112342"
+    ],
+    "sdPublisher": [
+      {
+        "name": "inra",
+        "url": "https://zenodo.org/communities/inra"
+      }
+    ],
+    "url": "https://zenodo.org/record/1112341"
+  }
+]

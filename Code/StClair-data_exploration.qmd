@@ -1,0 +1,93 @@
+---
+title: "StClair-data_exploration"
+format: html
+---
+
+```{r}
+rm(list=ls())
+library(here)
+library(ggplot2)
+library(ggfortify)
+library(multcomp)
+library(dplyr)
+```
+
+```{r}
+weeds<-read.csv(here("Data", "tax.discoweed_updated.csv"))
+weeds
+weeds<- weeds |> select( red_UK,lifeform, module, biogeo, biovigilance)
+
+weeds$red_UK<- as.factor(weeds$red_UK)
+weeds$lifeform<- as.factor(weeds$lifeform)
+weeds$biovigilance<- as.factor(weeds$biovigilance)
+
+glimpse(weeds)
+levels(weeds$red_UK)
+levels(weeds$lifeform)
+levels(weeds$biovigilance)
+```
+
+## Getting rid of groups with "Wait" as an option for red_UK
+```{r}
+weeds <- weeds |> 
+  filter(as.character(red_UK) != "Wait") |>  
+  droplevels()
+levels(weeds$red_UK)  
+```
+
+a.	Check your data for mistakes and outliers. If there are outliers, decide what you will do with them and provide a justification for your choice and then take whatever action you need to deal with them.
+c.	Write code to save the cleaned, revised dataset in your Data folder with a clear name indicating that it is the version to use in future analysis.
+d.	Perform exploratory data analysis as we discussed in class for the data in your project (hint: summary statistics, plots…)
+
+```{r}
+ggplot(weeds, aes(x = module)) +
+  geom_histogram() +
+  labs(title = "Histogram of Growth Form (Module)", x = "Module", y = "Frequency") +
+  theme_minimal()
+
+```
+
+```{r}
+weeds<- weeds |> filter(module<20)
+```
+
+Values of module greater than 20 are excluded because they are much higher than most of the other values in the dataset, suggesting they are outliers or errors. This threshold is chosen based on the typical range of values observed in the data.
+
+```{r}
+ggplot(weeds, aes(x = lifeform)) +
+  geom_bar()
+```
+
+Data looks evenly distributed and there isn't a group present that shouldn't be.
+
+```{r}
+ggplot(weeds, aes(x = biogeo)) +
+  geom_bar()+
+  coord_flip()
+```
+
+No mistakes in the names of the different bio geographical regions 
+
+```{r}
+ggplot(weeds, aes(x = biovigilance, y = module, fill = biovigilance)) +
+  geom_boxplot()
+```
+
+With module < 20 there are no major and concerning outliers in the data. 
+
+```{r}
+
+weeds |>
+  summarise(
+    mean_module = mean(module, na.rm = TRUE),
+    median_module = median(module, na.rm = TRUE),
+    sd_module = sd(module, na.rm = TRUE)
+  )
+
+weeds |>
+  group_by(lifeform) |>
+  summarise(count = n())
+
+```
+
+The summary statistics for the module variable show a mean of 4.53, which indicates that the average value is slightly below 5, suggesting that most data points are clustered just under this value. The median is 5, which is close to the mean, implying that the distribution of module is relatively symmetrical. The standard deviation of 2.43 indicates moderate variability, suggesting that while most values are near the mean, there is a reasonable spread in the data. For the lifeform variable, the counts show that the dataset is heavily skewed toward the therophyte category, with 178 observations, while other lifeforms such as chamaephyte, phanaerophyte, and liana have fewer observations (9 each for chamaephyte and phanaerophyte, and 13 for liana). Overall, the module variable appears to be fairly balanced in its distribution, while the lifeform variable shows strong dominance of a single category.

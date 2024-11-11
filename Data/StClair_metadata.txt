@@ -1,0 +1,33 @@
+Munoz, François , et al. “NIAID Data Discovery Portal.” NIAID Data Discovery Portal, 2024, data.niaid.nih.gov/resources?id=ZENODO_1112341. Accessed 26 Oct. 2024.
+
+https://data.niaid.nih.gov/resources?id=ZENODO_1112341 
+
+The dataset comprises a comprehensive list of 1,577 weed plant taxa found in cultivated fields across France and the UK, along with their ecological and biogeographical characteristics. Each entry includes taxonomic details, habitat presence from various surveys, life form classifications, and conservation status. This information is essential for understanding the distribution and ecological roles of these species in agricultural landscapes.
+
+taxref10_CD_REF: Unique code for the accepted taxon name based on TaxRef v10.
+binome_discoweed: Latin name of the taxon.
+family: Taxonomic family name, following APG III classification.
+taxo: Taxonomic rank, indicating whether the taxon is at the species level ('binome') or infraspecific level ('infra').
+binome_discoweed_noinfra: Latin name of the superior taxon at the species level (for infraspecific taxa).
+taxref10_CD_REF_noinfra: Code of the accepted name of the superior taxon at the species level.
+jauzein: Presence in the national flora of France based on long-term observations.
+za: Presence in regional surveys from 'Zone Atelier Plaine & Val de Sèvre' in southwestern France.
+biovigilance: Presence in a national survey of cultivated fields in France.
+fse: Presence in Farm Scale Evaluations conducted in England and Scotland.
+farmbio: Presence in the Farm4Bio survey from farms in southeastern and southwestern England.
+cambecedes: Presence in a reference list of segetal species in France.
+lifeform: Classification of the plant based on Raunkiaer’s system (e.g., therophyte, hemicryptophyte).
+biogeo: Biogeographical classification of the taxon (e.g., Eurasian, Mediterranean).
+red_FR: Conservation status in France based on assessments by the French National Museum of Natural History.
+red_UK: Conservation status in the UK based on the Red List of vascular plants.
+module: Habitat index derived from plant community analysis in open herbaceous vegetation.
+c: Coefficient of participation, indicating the taxon's presence across various habitats (0 = specialist, 1 = generalist).
+z: Within-module degree, a standardized measure of the taxon's frequency in its habitat, expressed in standard deviations from the mean.
+
+Changes
+red.UK to red_UK
+red.FR to red_FR
+taxref10.CD_REF.infra to taxref10_CD_REF_infra
+binome.discoweed to binome_discoweed
+taxref10.CD_REF to taxref10_CD_REF
+
