@@ -1,0 +1,21 @@
+---
+title: "data-exploration-feedback"
+format: html
+editor: visual
+---
+
+## Data Exploration Feedback
+
+1.  I like that you make it clear in your readme file that you are just going to be using the file that you updated, but I'd like to either see the R Code that goes ahead and updates that file, or make it clear that StClair_metadata.txt directly goes with tax.discoweed_updated.csv
+
+2.  What is the justification for getting rid of groups with "Wait" as an option for red_UK? I'd like to see more explaination. This file won't stand alone in a year - you should document why you are making the choices that you do.
+
+3.  Please work on separating your "scientific thinking" from your "coding thinking" - e.g on line 50, you make a comment inside of the code chunk about module \> than 20 seeming to be an oultier. That is commenatary that should go outside of the code chunk. Similarly, I'd like to know why you decided to omit that outlier point - you have identified it as a possible outlier, but have failed to discuss why you might want to get rid of it vs. keep it.
+
+4.  In line 73 you say that data look "evenly distributed" but I don't know what you mean, as the count data b/w groups is def not evenly distributed.
+
+5.  You may want to do some combining and further examination of the biogeo variable - do the holarctic counts include e.g. european data? (i.e. are things counted \> 1 time?) If so, you may not want to keep all of the levels.
+
+6.  I'm a little confused about your data. I can see that you can conduct 2 chi-square tests, but what is the continuous response variable that you will be using for an ANOVA? Can you tell me more about what "module" means as a habitat index? I'm concerned that it might be categorical as well.
+
+Overall a good job! 
