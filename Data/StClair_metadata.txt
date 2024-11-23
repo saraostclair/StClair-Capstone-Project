@@ -2,7 +2,7 @@ Munoz, François , et al. “NIAID Data Discovery Portal.” NIAID Data Discover
 
 https://data.niaid.nih.gov/resources?id=ZENODO_1112341 
 
-The dataset comprises a comprehensive list of 1,577 weed plant taxa found in cultivated fields across France and the UK, along with their ecological and biogeographical characteristics. Each entry includes taxonomic details, habitat presence from various surveys, life form classifications, and conservation status. This information is essential for understanding the distribution and ecological roles of these species in agricultural landscapes.
+The dataset comprises a comprehensive list of 1,577 weed plant taxa from the found in cultivated fields across France and the UK, along with their ecological and biogeographical characteristics. Each entry includes taxonomic details, habitat presence from various surveys, life form classifications, and conservation status. This information is essential for understanding the distribution and ecological roles of these species in agricultural landscapes.
 
 taxref10_CD_REF: Unique code for the accepted taxon name based on TaxRef v10.
 binome_discoweed: Latin name of the taxon.
@@ -20,8 +20,7 @@ lifeform: Classification of the plant based on Raunkiaer’s system (e.g., thero
 biogeo: Biogeographical classification of the taxon (e.g., Eurasian, Mediterranean).
 red_FR: Conservation status in France based on assessments by the French National Museum of Natural History.
 red_UK: Conservation status in the UK based on the Red List of vascular plants.
-module: Habitat index derived from plant community analysis in open herbaceous vegetation.
-c: Coefficient of participation, indicating the taxon's presence across various habitats (0 = specialist, 1 = generalist).
+module: Habitat categories based on Divgrass database
 z: Within-module degree, a standardized measure of the taxon's frequency in its habitat, expressed in standard deviations from the mean.
 
 Changes

@@ -1,0 +1,37 @@
+red_UK: Conservation status in the UK based on the Red List of vascular plants.
+	NT: Near Threatened - Taxa close to qualifying as Vulnerable but not currently at high risk of extinction.
+	VU: Vulnerable - Taxa facing a high risk of extinction in the medium-term future due to factors like population decline or restricted range.
+	Wait: Awaiting assessment or review for conservation status; indicates temporary uncertainty.
+
+module: Habitat categories based on Divgrass database:
+	1: Dry calcareous grasslands.
+	3: Mesic grasslands.
+	5: Ruderal and trampled grasslands.
+	9: Mesophilous and nitrophilous fringes (e.g., hedgerows, forest edges).
+	99: Other habitats; NA for taxa absent from Divgrass.
+
+lifeform: Plant classification based on Raunkiaer's system
+	Therophyte: Annual plants completing their life cycle within a year.
+	Hemicryptophyte: Perennials with buds at or near the soil surface, often surviving unfavorable seasons underground.
+	Geophyte: Perennials with underground storage organs like bulbs or rhizomes.
+	Phanerophyte-Chamaephyte: Woody plants with buds above the ground (phanerophyte) or close to the ground (chamaephyte).
+	Liana: Climbing or trailing plants.
+
+biogeo: Biogeographical classification
+	Atlantic: Found in regions with Atlantic climatic influence.
+	Circumboreal: Distributed around boreal regions globally.
+	Cosmopolitan: Found nearly worldwide.
+	Eurasian: Native to or spanning Europe and Asia.
+	European: Restricted to Europe.
+	Holarctic: Found in northern hemisphere's temperate and Arctic zones.
+	Introduced: Non-native species (e.g., Introduced (North America) indicates origin in North America).
+	Mediterranean: Native to or primarily found in the Mediterranean region.
+	Orophyte: Found in mountainous areas.
+	Subtropical: Found in subtropical climates.
+	Endemics: Localized species such as Aquitanian, Corsican, Provencal.
+	Arctic-Alpine: Restricted to Arctic and Alpine regions.
+
+biovigilance: Presence in France's national survey of cultivated fields
+	1: Taxon present in biovigilance surveys (indicating long-term monitoring).
+	0: Taxon absent from biovigilance surveys.
+	NA: No data available for the taxon in biovigilance surveys.

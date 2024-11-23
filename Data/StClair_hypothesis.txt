@@ -1,0 +1,32 @@
+Hypothesis 1: 
+Predictor Variables(X): Life Form
+-	Data structure: Categorical 
+o	Levels: Therophyte, Hemicryptophyte, Geophyte, Phanerophyte, Chamaephyte, and Liana
+Response Variables (Y): Red List Status (red_FR and red_UK)
+-	Data structure: Categorical 
+o	Levels: LC (Least Concern), NT (Near Threatened), VU (Vulnerable), EN (Endangered),  CR (Critically Endangered), EX (Extinct), and NA (Not Assessed)
+
+I hypothesize that there will be a negative relationship between the life form of weed taxa and their conservation status. For example, I predict that therophytes will be more likely to fall under Least concern category compared to phanerophytes, which will have a greater likelihood of being classified as Endangered. Annual plants such as therophytes make them more resilient and therefore more adaptable to changing conditions, resulting in a more stable population. On the other hand, phanerophytes which are perennials are more vulnerable to changing conditions and are more likely to have a higher red list classification.
+Fried, G., et al. (2008). "Biovigilance: National survey of cultivated fields in France." Journal of Plant Ecology, 1(2), 131-140. https://doi.org/10.1093/jpe/rtm006 
+
+Hypothesis 2: 
+Predictor Variable (X): Biogeographic Zone
+-	Data Structure: Categorical
+o	Levels: Atlantic, Circumboreal, Cosmopolitan, Eurasian, European, Holarctic, Introduced, Mediterranean, Orophyte, Subtropical Local Endemics, and Arctic-Alpine
+Response Variable (Y): Habitat Index (module)
+-	Data Structure: Categorical
+o       Levels: 1 (Dry calcareous grasslands), 3 (Mesic grasslands), 5 (Ruderal and trampled grasslands), 9 (Mesophilous and nitrophilous fringes), 99 (Other habitats)
+I hypothesize that the biogeographic zone of a weed taxon will show significant associations with its habitat index (module). Specifically, Mediterranean taxa are expected to show a higher frequency in habitat types indicative of diverse or adaptable environments, such as mesic grasslands (level 3) and mesophilous and nitrophilous fringes (level 9). Mediterranean flora demonstrates phenotypic plasticity and adaptability to varied environments, which could influence their habitat preferences. This aligns with findings from Aurelle et al. (2022) on Mediterranean biodiversity and adaptability.
+
+Aurelle, Didier, et al. “Biodiversity, Climate Change, and Adaptation in the Mediterranean.” Ecosphere, vol. 13, no. 4, Apr. 2022, esajournals.onlinelibrary.wiley.com/doi/10.1002/ecs2.3915, https://doi.org/10.1002/ecs2.3915 
+
+Hypothesis 3: 
+Predictor Variable (X): Biovigilance Presence (biovigilance)
+-	Data Structure: Categorical: Binary
+o	Levels: 0 (Absent) and 1 (Present)
+Response Variable (Y): Life Form
+-	Data Structure: Categorical
+o	Levels: Therophyte, Hemicryptophyte, Geophyte, Phanerophyte, Chamaephyte, and Liana
+I expect to find that taxa reported as present in the Biovigilance survey (1) are more likely to be therophytes or hemicryptophytes compared to taxa that are absent (0). This suggests that annual and biennial plants dominate in cultivated fields. Therophytes and hemicryptophytes are prevalent in disturbed environments like agricultural fields due to their ability to rapidly establish and reproduce in response to disturbances. 
+Di Biase, Letizia, et al. “Variations in Plant Richness, Biogeographical Composition, and Life Forms along an Elevational Gradient in a Mediterranean Mountain.” Plants, vol. 10, no. 10, 1 Oct. 2021, p. 2090, https://doi.org/10.3390/plants10102090. Accessed 3 Mar. 2022.
+

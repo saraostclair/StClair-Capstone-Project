@@ -2,6 +2,9 @@
 title: "StClair-data_exploration"
 format: html
 ---
+### Data Preparation
+
+#### Setting up the Document:
 
 ```{r}
 rm(list=ls())
@@ -12,101 +15,152 @@ library(multcomp)
 library(dplyr)
 ```
 
+#### Load in Data
+Here, I will load the data and create a new dataset by selecting only the variables that are relevant to my analysis. This subset will include the following variables: red_UK, module, lifeform, biogeo, and biovigilance. By focusing on these key variables, I aim to streamline the dataset for efficient and targeted exploration.
 ```{r}
 weeds<-read.csv(here("Data", "tax.discoweed_updated.csv"))
 weeds
 weeds<- weeds |> select( red_UK,lifeform, module, biogeo, biovigilance)
 #selecting on the varibles I will be analyzing
+glimpse(weeds)
+```
+From the data, I observe that the variables red_UK, biovigilance, and lifeform are currently of type character and should be converted to factor variables. Additionally, the variable module is currently an integer but should also be converted to a factor variable. This transformation is essential because these variables represent categorical data, and converting them to factors will ensure proper handling during statistical analysis and visualization, allowing for more accurate and meaningful results.
 
+#### Fix variables
+Here I turned red_UK, biovigilance, module, and lifeform into factors and checked the levels
+```{r}
 weeds$red_UK<- as.factor(weeds$red_UK)
 weeds$lifeform<- as.factor(weeds$lifeform)
 weeds$biovigilance<- as.factor(weeds$biovigilance)
+weeds$module<- as.factor(weeds$module)
 #making varibles factors that need to be 
 
-glimpse(weeds)
+levels(weeds$module)
 levels(weeds$red_UK)
 levels(weeds$lifeform)
 levels(weeds$biovigilance)
 #checking to make sure levels are correct 
+glimpse(weeds)
 ```
+After adjusting the variable types in the dataset, the structure is now optimized for analysis. The variable red_UK has been converted to a factor with three levels: NT, VU, and Wait, representing conservation status categories. Similarly, lifeform is now a factor with five levels: Therophyte, Hemicryptophyte, Geophyte, Phanerophyte, and Liana, reflecting distinct plant classifications. The variable module, originally an integer, has been converted to a factor with four levels: 1, 3, 5, and 99, corresponding to habitat categories. Additionally, biovigilance is now a factor with two levels: 1 (present) and 0 (absent), while biogeo remains as a character variable, representing biogeographical classifications. These adjustments ensure that categorical variables are appropriately defined as factors, enabling accurate statistical analysis and visualization.
 
-## Getting rid of groups with "Wait" as an option for red_UK
-```{r}
-weeds <- weeds |> 
-  filter(as.character(red_UK) != "Wait") |>  
-  droplevels()
-levels(weeds$red_UK)  
-```
-
-
-c.	Write code to save the cleaned, revised dataset in your Data folder with a clear name indicating that it is the version to use in future analysis.
-d.	Perform exploratory data analysis as we discussed in class for the data in your project (hint: summary statistics, plots…)
+### Data Visualization
 
 ```{r}
 ggplot(weeds, aes(x = module)) +
-  geom_histogram() +
-  labs(title = "Histogram of Growth Form (Module)", x = "Module", y = "Frequency") +
-  theme_minimal()
-#module> than 20 seem to be an outlier
-
-```
-
-```{r}
-#remove outliers
-weeds<- weeds |> filter(module<20)
-```
-
-```{r}
-ggplot(weeds, aes(x = module)) +
-  geom_histogram() +
+  geom_bar() +
   labs(title = "Histogram of Growth Form (Module)", x = "Module", y = "Frequency") +
   theme_minimal()
 ```
 
-Values of module greater than 20 are excluded because they are much higher than most of the other values in the dataset, suggesting they are outliers or errors. This threshold is chosen based on the typical range of values observed in the data.
+The bar chart shows that category 5 (Ruderal and trampled grasslands) is the most frequent, indicating it is the primary habitat for many taxa in the dataset. Categories 1 (Dry calcareous grasslands) and 3 (Mesic grasslands) have moderate frequencies, while categories 9 (Mesophilous and nitrophilous fringes) and 99 (Other habitats) are less frequent. Although 99 might seem like an outlier, it is retained as it represents "Other habitats" or taxa absent from Divgrass, making it a meaningful category rather than an anomaly. This distribution highlights the dominance of ruderal habitats and the presence of taxa in diverse, less common environments.
+
 
 ```{r}
 ggplot(weeds, aes(x = lifeform)) +
-  geom_bar()
+  geom_bar() +
+  labs(title = "Distribution of Life Forms", x = "Life Form", y = "Frequency")+
+ coord_flip()
+```
+The dataset shows a dominance of therophytes, reflecting the prevalence of annual plants in disturbed or agricultural habitats, followed by hemicryptophytes and fewer geophytes. Rare categories like liana and chamaephyte are infrequent, while NA values indicate some missing data. This highlights the ecological prominence of therophytes in the dataset.
+
+```{r}
+View(table(weeds$biogeo) )
+
 ```
 
-- Data looks evenly distributed and there isn't a group present that shouldn't be the levels are correct. Does not seem as though there are outliers present
+The biogeo variable contains several instances of overlap between broader categories and their subcategories. For example, Eurasian includes subcategories such as Eurasian(meridional), Eurasian(septentrional), and Eurasian(temperate), while European includes subcategories like European(meridional), European(central), and European(eastern). Similarly, Mediterranean, Holarctic, Atlantic, Cosmopolitan, and Introduced have multiple subcategories that create potential redundancy and overlap. I will address this by retaining only the main categories, such as Eurasian and European, and removing the subcategories. This will simplify the variable and reduce the risk of double-counting while preserving meaningful distinctions for analysis.
+
+```{r}
+
+# Simplify `biogeo` variable and keep only specified categories
+weeds <- weeds %>%
+  mutate(
+    biogeo = case_when(
+      grepl("^Eurasian", biogeo) ~ "Eurasian",
+      grepl("^European", biogeo) ~ "European",
+      grepl("^Mediterranean", biogeo) ~ "Mediterranean",
+      grepl("(?i)^Cosmopolitan", biogeo) ~ "Cosmopolitan", 
+      # Case-insensitive
+      TRUE ~ NA_character_ 
+      # Assign NA to all other categories
+    )
+  ) %>%
+  filter(biogeo %in% c("Cosmopolitan", "Eurasian", "European", "Mediterranean")) 
+# Keep only specified categories
+
+# Validate the cleaned `biogeo` variable
+View(table(weeds$biogeo))
+```
+
+I simplified the biogeo variable by grouping subcategories into the broader categories Cosmopolitan, Eurasian, European, and Mediterranean, while removing all other values. This was done to reduce redundancy and focus on the most relevant categories for analysis. The result is a cleaner dataset with only these four meaningful categories, making it easier to interpret and analyze biogeographical patterns.
 
 ```{r}
 ggplot(weeds, aes(x = biogeo)) +
+  geom_bar() +
+  labs(
+    title = "Distribution of Biogeographical Categories",
+    x = "Biogeographical Category",
+    y = "Frequency"
+  ) +
+  theme_minimal()
+
+```
+The bar chart shows that the Mediterranean category dominates the dataset, followed by European and Eurasian, which have similar frequencies. The Cosmopolitan category has the lowest frequency, indicating fewer globally distributed taxa compared to region-specific ones.
+
+
+```{r}
+ggplot(weeds, aes(x = biovigilance)) +
   geom_bar()+
-  coord_flip()
+  labs(
+    title = "Distribution of Biovigilance Presence",
+    x = "Biovigilance",
+    y = "Frequency"
+  ) +
+  theme_minimal()
 ```
 
-No mistakes in the names of the different bio geographical regions.  
+The chart shows that the majority of taxa are absent from the biovigilance survey (0), with significantly fewer being present (1). This indicates a strong skew in the data, suggesting that most taxa are not recorded in the biovigilance dataset.
 
 ```{r}
-ggplot(weeds, aes(x = biovigilance, y = module, fill = biovigilance)) +
-  geom_boxplot()
+ggplot(weeds, aes(x = red_UK)) +
+  geom_bar() +
+  labs(
+    title = "Distribution of Conservation Status (red_UK)",
+    x = "Conservation Status",
+    y = "Frequency"
+  ) +
+  theme_minimal()
+
 ```
+The current chart shows the distribution of conservation status (red_UK) categories, but the high frequency of NA values overshadows the rest of the data. To gain a clearer understanding of the distribution, I will remove the NA values to focus on the meaningful conservation status categories.
 
-With module < 20 there are no major and concerning outliers in the data. 
 
 ```{r}
+ggplot(weeds |> filter(!is.na(red_UK)), aes(x = red_UK)) +
+  geom_bar() +
+  labs(
+    title = "Distribution of Conservation Status (red_UK)",
+    x = "Conservation Status",
+    y = "Frequency"
+  ) +
+  theme_minimal()
 
-weeds |>
-  summarise(
-    mean_module = mean(module, na.rm = TRUE),
-    median_module = median(module, na.rm = TRUE),
-    sd_module = sd(module, na.rm = TRUE)
+```
+The updated chart shows the distribution of conservation status (red_UK) categories after removing NA values to better focus on the data. The LC (Least Concern) category dominates, indicating most taxa have a low risk of extinction, while other categories like CR (Critically Endangered), EN (Endangered), and VU (Vulnerable) are present in much smaller proportions. This filtered view provides a clearer understanding of the conservation status distribution among the taxa.
+
+### Saving New Data
+```{r}
+weeds <- weeds |>
+  mutate(
+    lifeform = as.factor(lifeform),
+    biovigilance = as.factor(biovigilance),
+    red_UK = as.factor(red_UK),
+    module = as.factor(module)
   )
-
-weeds |>
-  group_by(lifeform) |>
-  summarise(count = n())
-
 ```
-
-The summary statistics for the module variable show a mean of 4.53, which indicates that the average value is slightly below 5, suggesting that most data points are clustered just under this value. The median is 5, which is close to the mean, implying that the distribution of module is relatively symmetrical. The standard deviation of 2.43 indicates moderate variability, suggesting that while most values are near the mean, there is a reasonable spread in the data. For the lifeform variable, the counts show that the dataset is heavily skewed toward the therophyte category, with 178 observations, while other lifeforms such as chamaephyte, phanaerophyte, and liana have fewer observations (9 each for chamaephyte and phanaerophyte, and 13 for liana). Overall, the module variable appears to be fairly balanced in its distribution, while the lifeform variable shows strong dominance of a single category.
+The `mutate()` function had to be used to permanently convert the variables to factors, ensuring the changes were saved in the dataset before exporting it to a CSV file.
 
 ```{r}
 write.csv(weeds, "Data/weeds_clean.csv", row.names = FALSE)
 ```
-
-
-

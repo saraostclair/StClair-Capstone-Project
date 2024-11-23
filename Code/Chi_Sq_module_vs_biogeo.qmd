@@ -1,0 +1,90 @@
+---
+title: "Chi_Sq_module_vs_biogeo"
+format: html
+---
+
+
+### Setting up the Document:
+
+Here, I will load the data I am performing a chi-square test of independence on the variables biogeo and module
+
+```{r}
+rm(list=ls())
+library(here)
+library(ggplot2)
+library(ggfortify)
+weeds<- read.csv(here("Data", "weeds_clean.csv"))
+weeds$biogeo<- as.factor(weeds$biogeo)
+weeds$module<- as.factor(weeds$module)
+#correcting varibles identities 
+glimpse(weeds)
+```
+
+This dataset contains 1,294 rows and 5 columns, capturing information on lifeforms and their classifications, with some missing values (NA). The red_UK column represents conservation statuses, now a factor with three levels: NT, VU, and Wait. The lifeform column categorizes observations by biological form, now a factor with five levels: Therophyte, Hemicryptophyte, Geophyte, Phanerophyte, and Liana. The biogeo column indicates the biogeographical region, now a factor with four levels: Cosmopolitan, Eurasian, European, and Mediterranean. The module column, originally an integer, is now a factor with four levels: 1, 3, 5, and 99, corresponding to habitat categories. Finally, biovigilance is now a factor with two levels: 1 (present) and 0 (absent). This dataset combines categorical and numeric data, providing a foundation for exploring patterns in lifeform classifications, conservation statuses, geographic distributions, and monitoring efforts.
+
+### Analysis
+
+Null Hypothesis:
+There is no significant association between biogeo and module. The observed distribution of biogeo categories across module levels is due to chance and matches the expected distribution under independence.
+
+Alternative Hypothesis:
+There is a significant association between biogeo and module. The observed distribution of biogeo categories across module levels differs significantly from the expected distribution under independence.
+
+```{r}
+totals<- weeds|> group_by(module, biogeo)|>
+  filter(!is.na(biogeo) & !is.na(module)) |> # Remove rows with NA in 'lifeform' or 'red_UK'
+  summarise(total.numbers = n(), .groups = 'drop' )
+```
+
+NA values in module and biogeo created additional, unintended groups in the analysis, as NA is treated as a separate category. These artificial groups could distort results and misrepresent the true relationship between the variables. Removing rows with NA ensures a cleaner, more accurate visualization that reflects only meaningful data.
+
+```{r}
+ggplot(totals, aes(x = module, y = total.numbers, fill = biogeo)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(
+    title = "Distribution of Module by Biogeo",
+    x = "Module",
+    y = "Total Numbers",
+    fill = "Biogeo"
+  ) +
+  theme_minimal()+
+  coord_flip()
+```
+The distribution of module by biogeo reveals distinct patterns. Module 5 is heavily dominated by the Mediterranean biogeographical region, contributing significantly more observations compared to other regions. Other modules, such as 1, 3, 9 and 99, show more balanced distributions across biogeographical categories like Cosmopolitan, Eurasian, and European, but with fewer total observations. Module 9 has relatively few entries, with a noticeable presence of European and Eurasian regions. Overall, the Mediterranean region appears to have a disproportionate influence on Module 5, while other regions are more evenly distributed across the remaining modules.
+
+
+$Chi^2$ Test
+```{r}
+# Create a contingency table for biogeo and module
+lady.mat<- xtabs(~module + biogeo, data=weeds)
+```
+
+```{r}
+lady.chi<-chisq.test(lady.mat)
+lady.chi
+```
+A Pearson’s Chi-Squared test of independence was conducted to assess the relationship between biogeo and module. The results showed a highly significant association between the two variables, χ²(12, N = total count) = 285.08, p < 2.2e-16. This indicates that the distribution of biogeo categories is not independent of module, suggesting a meaningful relationship between biogeographical regions and module classifications.
+
+
+```{r}
+library(ggplot2)
+
+ggplot(totals, aes(x = module, y = total.numbers, fill = biogeo)) +
+  geom_bar(stat = "identity", position = "dodge", color = "black", linewidth = 0.2) + 
+  scale_fill_brewer(palette = "Set3", name = "Biogeo") + 
+  labs(
+    title = "Distribution of Module by Biogeo",
+    x = "Module",
+    y = "Total Numbers",
+    fill = "Biogeographical Region"
+  ) +
+  theme_minimal() +
+  coord_flip()+
+  theme(legend.position = "top",
+        plot.title = element_text(face = "bold"))
+
+```
+
+
+Rejecting the Null Hypothesis:
+Based on the chi-square test results, we reject the null hypothesis, as the p-value (< 2.2e-16) is well below the standard significance level (e.g., 0.05). This indicates a significant association between biogeo and module, meaning the observed differences in the distribution of biogeo categories across module levels are unlikely to be due to chance and reflect a meaningful relationship.
