@@ -1,0 +1,71 @@
+---
+title: "prelim analysis feedback"
+format: html
+editor: visual
+---
+
+## Preliminary Analysis Feedback
+
+### General
+- Please clean up your project before the final draft. For instance, the file called `StClair_analysis.qmd` is basically empty.
+
+- Overall this is a good job. Learn to conduct post-hoc tests on Chi-square (see link below).
+
+
+### Chi_sq_lifeform_vs_biovigilance.qmd
+You need to include `library(tidyverse)` in your set up chunk in order for `glimpse()` to run on line 19.
+
+Line 22 - Note that your dataset does NOT combine categorical and numeric data - you have just factor data here.
+
+Line 30 - Do you have any particular alternative hypotheses? Are there certain life forms that you might expect to be more or less likely to be detected under the surveilance program? This is where the biology comes in.
+
+Line 34 - Why did you remove those cases where red_UK was = NA? 
+
+If you use this code I get very different numbers in the totals df - so I need to understand why you omitted all the ones with red_UK == NA.
+```{r}
+new_totals <- weeds %>% group_by(lifeform, biovigilance) %>% 
+  filter(
+    !is.na(biovigilance) & (lifeform != "")
+) %>% 
+  summarise(total.numbers = n())
+```
+By looking at your plot, I'm now uncertain if what you mean to be analyzing is the independence of lifeform and red_UK since that is what's in the plot?
+
+So I think you may wish to re-run the analysis with the larger data set (equal to my new_totals above) or else make very clear why you filtered all the red_UK == NA values.
+
+Your analysis itself looks good.
+An extension that you should figure out how to do that we didn't cover is the "multiple comparision of means equivalent" for chi-square tests of indepdencene. Since you did see a signficiant result of your overall test, the next question is which groups are actually different from one another?  [Here's a link](https://www.biostathandbook.com/chiind.html) to help you start digging into how to do that next level of the analysis (read down the page about "post-hoc tests").
+
+Basically, the approach is to do all of the pairwise comparisons and use a more conservative value of P for signficance.
+
+Do you want to do anything to create a final plot? You could, for example, after doing post-hoc tests, add letters to show which groups are not independent.
+
+### Chi_Sq_module_vs_biogeo.qmd
+My feedback is essentially the same as for the previous analysis.
+In addtion:
+
+While lifeform is somewhat self-explanatory, you might explain your variables (like "module" and "biogeo" here and "biovigilence" in the previous case) so that it is easier to understand your process. Just a quick sentence to explain that "module" is equivalent to habitat type and that therefore your null is that the counts of these different weeds in different habitats is independent of their biogeographic realm.
+
+Line 31 - can you  make an particular alternative hypotheses based on how these groups might differ biologically? Also, while lifeform is somewhat self-explanatory, you might explain your variables (like "module" here and "biovigilence" in the previous case) so that it is easier to understand your process. Just a quick sentence to explain that "module" is equivalent to habitat type and that therefore your null is that the counts of these differnt weed lifeforms is independent of habitat.
+
+Line 55 - when you interpret your figure, rather than just talk about "module 5" or whatnot, perhaps (and consider making this change on your plot as well) consider using a descriptive term for each habitat module.
+
+Line 69 - I like your final plot, but think that you should consider more descriptive labels for the module categories.
+
+And like for the previous analysis, you should run post-hoc tests on your data.
+
+### Chi_Sq_redUK_vs_lifeform
+Again, consider all of the other feedback so far and think about what of it also applies here.
+
+Do you have any specific alternative hypotheses? 
+
+For this analysis and the analysis of lifeform and biosurveilance, you may wish to consider grouping some of the lifeforms together under a "joined" red_UK status so that you get larger total numbers. For instance, you could combine geophytes that are data deficient (N = 1) with geophytes that are least concernt (N = 27). Chi-square doesn't behave very well when you have a lot of groups with counts < 5.
+
+Line 52 - can you think about the biology a bit more here? what kinds of plants are therophytes and is there some reason that they show a spike in "VU" (vulnerable) status relative to other types of plants? 
+
+Because for each group so many are dominated by representation in the LC category, it would be interesting to see a plot where you exclude all the LC data to enhance the visual comparison of the rest of the data.
+
+Again you've done the test correctly, but should now do post-hoc tests. Also I think it might be worth it to do a separate analysis after removing all the cases of data deficient and least concern to then see if there are differences among life forms in their representation in more threatened and endangered categories.
+
+
+
