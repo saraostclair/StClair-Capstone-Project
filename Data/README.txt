@@ -9,6 +9,7 @@ StClair_hypothesis.txt is the txt. document that includes the different hypothes
 StClair_metadata.txt file serves as a comprehensive explanation of the tax.discoweed_updated.csv dataset, detailing its origin, purpose, creation context, and variable definitions. This ensures clarity and provides essential background for anyone using the dataset in analysis or further research.
 
 tax.discoweed_updated.csv is the clean and properly structured dataset I will use for my analysis.
+
 tax.discoweed_18Dec2017_zenodo is the original dataset I downloaded before I fixed anything.
 
 weeds_clean.csv is for data analysis and includes only the variables relevant to the analysis—red_UK, lifeform, module, biogeo, and biovigilance. It is derived from tax.discoweed_updated.csv, which is the cleaned version of the original unclean dataset, tax.discoweed_18Dec2017_zenodo.

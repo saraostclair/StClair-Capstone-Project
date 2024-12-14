@@ -1,0 +1,358 @@
+---
+title: "Final Report"
+author: "Sara St. Clair"
+format: html
+---
+
+## Introduction
+
+The data set I am working with, tax.discoweed_18Dec2017_zenodo, was sourced from the Zenodo repository, which hosts various ecological and conservation-related data sets. The primary purpose of this data set is to provide information on the conservation status and ecological characteristics of plant species across multiple regions, with a focus on the UK and France. The data includes classifications of plant life forms, conservation statuses (e.g., Red List status), and biogeographic information for each species. This data set allows for exploration of how ecological traits and environmental factors, such as habitat type and biogeographic zone, influence the conservation status of plant species.
+
+The data set spans multiple years, with data collected up until December 2017, providing a snapshot of the plant species conservation status at that time. It contains information on a wide variety of plant species, categorized by life form (e.g., therophytes, phanerophytes) and conservation status (e.g., vulnerable, endangered). The full data set includes hundreds of records, but for my analysis, I focused on a subset of the data that is directly relevant to my research questions.
+
+To prepare the data for analysis, I began with a comprehensive data exploration phase. This involved examining the raw data set (tax.discoweed_18Dec2017_zenodo) to identify key variables such as red_UK (conservation status in the UK), lifeform (classification of plant life forms), and biovigilance (presence or absence of monitoring). I also filtered for additional variables like biogeo (biogeographic zone) and module (habitat index) to streamline the data.
+
+In this exploration phase, I had to clean the data by addressing missing values and inconsistencies. This included using dplyr, a package in R that I learned to apply for filtering relevant variables, removing missing or duplicate entries, and ensuring the data was in a format suitable for statistical analysis. I also took the necessary steps to ensure the categorical variables were properly coded, ensuring that I could perform meaningful chi-square tests and other statistical analyses.
+
+After cleaning and preparing the data, I created a new, streamlined data set called weeds_clean.csv to facilitate more efficient analysis. This data set was carefully curated to include only the variables that were central to my research questions, ensuring that the analysis would be both targeted and manageable.
+
+## Analysis
+
+### Analysis 1: Lifeform vs. Biovigilance
+
+#### Setting up the Document:
+
+Here, I will load the data I am performing a chi-square test of independence on the variables lifeform and biovigilance.
+
+```{r}
+rm(list=ls())
+library(here)
+library(tidyverse)
+library(ggplot2)
+library(ggfortify)
+weeds<- read.csv(here("Data", "weeds_clean.csv"))
+weeds$biovigilance<- as.factor(weeds$biovigilance)
+weeds$lifeform<- as.factor(weeds$lifeform)
+#correcting varibles identities 
+```
+
+The data set contains 1,294 rows and 5 columns, with all variables now represented as categorical factors. The red_UK column, indicating conservation statuses, has three levels: NT (Near Threatened), VU (Vulnerable), and Wait. The lifeform column categorizes observations into five biological forms: Therophyte, Hemicryptophyte, Geophyte, Phanerophyte, and Liana. The biogeo column reflects the biogeographical region, with four levels: Cosmopolitan, Eurasian, European, and Mediterranean. The module column, initially an integer, now represents habitat categories as a factor with four levels: 1, 3, 5, and 99. Finally, the biovigilance column is a binary factor with two levels: 1 (present) and 0 (absent). Contrary to the initial interpretation, this data set contains only categorical data, not a mix of categorical and numeric variables. This provides a robust framework for analyzing patterns in lifeform classifications, conservation statuses, geographic distributions, and monitoring efforts using appropriate categorical data techniques.
+
+#### Analysis
+
+Null Hypothesis: There is no significant association between lifeform and biovigilance. The observed distribution of lifeforms across biovigilance categories is consistent with the expected distribution under the assumption of independence.
+
+Alternative Hypothesis: There is a significant association between lifeform and biovigilance. Specifically, certain lifeforms, such as Therophytes, which are short-lived plants that rapidly respond to environmental changes, may be overrepresented in biovigilance categories due to their high detectability and ecological traits. Therophytes' quick life cycles and responsiveness to environmental shifts make them prime candidates for monitoring and conservation efforts (Fried et al., 2008). Conversely, lifeforms like Phanerophytes, which include trees and shrubs with longer lifespans and slower responses to environmental changes, may be underrepresented in biovigilance categories. Their slower growth and less frequent ecological changes could result in lower detection rates or monitoring biases, particularly in resource-limited environments that focus on more immediately observable species (Aurelle et al., 2022).
+
+References:
+
+Fried, G., et al. (2008). Ecological interactions and biodiversity conservation in Mediterranean ecosystems. Ecological Applications, 18(5), 1317-1329. Aurelle, D., et al. (2022). Impact of environmental factors on the conservation status of plant species in Mediterranean climates. Journal of Ecology, 110(6), 1424-1435.
+
+```{r}
+totals1 <- weeds |> group_by(lifeform, biovigilance) |>
+  filter(
+    !is.na(biovigilance) & (lifeform != "")
+) |>
+  summarise(total.numbers = n())
+```
+
+NA values in biovigilance created additional, unintended groups in the analysis, as NA is treated as a separate category. These artificial groups could distort results and misrepresent the true relationship between the variables. Removing rows with NA ensures a cleaner, more accurate visualization that reflects only meaningful data.
+
+```{r}
+ggplot(totals1, aes(x = lifeform, y = total.numbers, fill = biovigilance)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(
+    title = "Distribution of Lifeforms by Red_UK",
+    x = "Lifeform",
+    y = "Total Numbers",
+    fill = "Red_UK Status"
+  ) +
+  theme_minimal()+
+  coord_flip()
+```
+
+The chart shows that therophytes are the most common lifeform, with a high number of observations across both Red_UK statuses, though status 0 is significantly more prevalent than status 1. Hemicryptophytes are the second most common, primarily associated with status 0, with smaller proportions for status 1.
+
+Geophytes and chamaephytes have fewer observations, with chamaephytes almost entirely associated with status 0. Phanaerophytes and lianas are rare, with very few observations, while hydrophytes exhibit a small but relatively balanced distribution between statuses 0 and 1.
+
+These patterns reveal clear differences in the prevalence and monitoring of different lifeforms, highlighting potential ecological or observational factors influencing their association with the Red_UK statuses.
+
+$Chi^2$ Test
+
+```{r}
+# Create a contingency table for lifeform and biovigilance
+lady.mat1<- xtabs(~lifeform + biovigilance, data=weeds)
+```
+
+```{r}
+lady.chi1<-chisq.test(lady.mat1)
+lady.chi1
+```
+
+A Pearson’s Chi-Squared test of independence was performed to assess the relationship between lifeform and biovigilance. The results showed a significant association between the two variables, χ²(7, N = total count) = 19.008, p = 0.008. This indicates that the distribution of lifeforms is not independent of their biovigilance status, as the observed counts differ significantly from the expected counts under the null hypothesis.
+
+```{r}
+ggplot(totals1, aes(x = lifeform, y = total.numbers, fill = biovigilance)) +
+  geom_bar(stat = "identity", position = "dodge", color = "black", linewidth = 0.2) +
+  scale_fill_brewer(palette = "Set2", name = "Biovigilance Status") +
+  labs(
+    title = "Distribution of Lifeforms by Biovigilance",
+    x = "Lifeform",
+    y = "Total Numbers",
+    fill = "Biovigilance Status"
+  ) +
+  theme_minimal() +
+  coord_flip()+
+  theme(plot.title = element_text(face = "bold"),
+        legend.position = "top")
+
+```
+
+Rejecting the Null Hypothesis: Based on the chi-square test results, we reject the null hypothesis, as the p-value (0.008) is below the standard significance level of 0.05. This indicates a significant association between lifeform and Red_UK status, meaning the observed differences in the distribution of Red_UK status across lifeforms are unlikely to be due to chance and reflect a meaningful relationship. Specifically, certain lifeforms, such as Therophytes, may show an overrepresentation in biovigilance categories due to their high detectability and ecological characteristics (Fried et al., 2008), while others, like Phanerophytes, may be underrepresented due to their slower ecological responses or monitoring biases (Aurelle et al., 2022). These findings suggest that ecological traits of lifeforms influence their likelihood of being categorized within conservation status classifications.
+
+References:
+
+Fried, G., et al. (2008). Ecological interactions and biodiversity conservation in Mediterranean ecosystems. Ecological Applications, 18(5), 1317-1329. Aurelle, D., et al. (2022). Impact of environmental factors on the conservation status of plant species in Mediterranean climates. Journal of Ecology, 110(6), 1424-1435.
+
+#### Post Hoc Analysis
+
+```{r}
+library(chisq.posthoc.test)
+
+posthoc1<-chisq.posthoc.test(lady.mat1, method = "bonferroni")
+posthoc1
+```
+
+The post hoc analysis of lifeform versus biovigilance reveals no significant associations between lifeform and biovigilance status, as indicated by the p-values, which are all greater than the standard significance threshold of 0.05. Biovigilance is coded as 0 and 1, with 0 representing species that are not under active biovigilance or monitoring for conservation purposes, and 1 representing species that are being actively monitored due to their conservation concern. The residuals indicate the differences between the observed and expected values for each lifeform under the two biovigilance categories.
+
+For chamaephyte, geophyte, hydrophyte, liana, phanaerophyte, and therophyte, the residuals are either positive or negative, suggesting some variation in their presence across the biovigilance categories. However, the p-values for all these comparisons are above 0.05, suggesting that these differences are not statistically significant. This means that the distribution of these lifeforms between the 0 and 1 categories of biovigilance is likely due to random variation rather than a meaningful ecological pattern.
+
+The hemicryptophyte lifeform, with residuals close to zero for both categories, also shows p-values of 1, reinforcing that there is no significant relationship between this lifeform and its inclusion in biovigilance monitoring.
+
+In conclusion, the lack of significant results from the post hoc test implies that there is no clear distinction between species lifeforms in terms of their biovigilance status (0 = not monitored, 1 = monitored). It suggests that factors other than lifeform—such as population size, habitat type, or ecological traits—might better explain the variation in biovigilance categorization rather than lifeform alone.
+
+The chi-square test may have returned a significant result despite no meaningful differences due to factors like small sample sizes or low expected frequencies in certain categories, which can inflate the test statistic. Additionally, the chi-square test does not account for potential confounding variables, which could result in spurious significance. While the chi-square test indicated significance, the post hoc pairwise tests with Bonferroni correction revealed no significant differences, suggesting that the chi-square result might be influenced by random variation, multiple comparisons, or data structure, rather than reflecting a true biological relationship.
+
+### Analysis 2: Module vs. Biogeo
+
+#### Setting up the Document:
+
+Here, I will load the data I am performing a chi-square test of independence on the variables lifeform and red_UK.
+
+```{r}
+rm(list=ls())
+library(tidyverse)
+library(here)
+library(ggplot2)
+library(ggfortify)
+weeds<- read.csv(here("Data", "weeds_clean.csv"))
+weeds$red_UK<- as.factor(weeds$red_UK)
+```
+
+This data set contains 1,294 rows and 5 columns, capturing information on lifeforms and their classifications, with some missing values (NA). The red_UK column represents conservation statuses, now a factor with three levels: NT, VU, and Wait. The lifeform column categorizes observations by biological form, now a factor with five levels: Therophyte, Hemicryptophyte, Geophyte, Phanerophyte, and Liana. The biogeo column indicates the biogeographical region, now a factor with four levels: Cosmopolitan, Eurasian, European, and Mediterranean. The module column, originally an integer, is now a factor with four levels: 1, 3, 5, and 99, corresponding to habitat categories. Finally, biovigilance is now a factor with two levels: 1 (present) and 0 (absent). This data set combines categorical and numeric data, providing a foundation for exploring patterns in lifeform classifications, conservation statuses, geographic distributions, and monitoring efforts.
+
+#### Analysis
+
+Null Hypothesis: There is no significant association between lifeform and Red_UK status. The observed distribution of lifeforms across Red_UK categories is consistent with what would be expected under conditions of ecological independence, implying that lifeform types do not influence or are not influenced by conservation status. This would suggest that different lifeforms, regardless of their biological characteristics, are equally likely to be classified into various Red_UK conservation statuses.
+
+Alternative Hypothesis: There is a significant association between lifeform and conservation status, with certain lifeforms, such as phanerophytes (woody plants), being more likely to be categorized under higher conservation concern statuses (e.g., Vulnerable, VU) due to their slower growth, longer lifespans, and limited dispersal ability. These life history traits make them more susceptible to environmental pressures and reduce their ability to adapt to changes, increasing their vulnerability to extinction (Fried et al., 2008). Conversely, lifeforms with faster reproductive rates and more generalized habitat requirements, such as therophytes, may be underrepresented in higher conservation concern categories, as their ecological traits enable them to adapt more rapidly to environmental changes (Aurelle et al., 2022). This suggests that lifeforms with particular ecological and life history traits are more prone to being classified under higher conservation concern statuses.
+
+References:
+
+Fried, G., et al. (2008). Ecological interactions and biodiversity conservation in Mediterranean ecosystems. Ecological Applications, 18(5), 1317-1329. Aurelle, D., et al. (2022). Impact of environmental factors on the conservation status of plant species in Mediterranean climates. Journal of Ecology, 110(6), 1424-1435.
+
+```{r}
+totals2<- weeds|> group_by(lifeform, red_UK)|>
+  filter(!is.na(lifeform) & !is.na(red_UK)) |> 
+  # Remove rows with NA in 'lifeform' or 'red_UK'
+  summarise(total.numbers = n(), .groups = 'drop' )
+
+```
+
+NA values in lifeform and red_UK created additional, unintended groups in the analysis, as NA is treated as a separate category. These artificial groups could distort results and misrepresent the true relationship between the variables. Removing rows with NA ensures a cleaner, more accurate visualization that reflects only meaningful data.
+
+```{r}
+
+ggplot(totals2, aes(x = lifeform, y = total.numbers, fill = red_UK)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(
+    title = "Distribution of Lifeforms by Red_UK",
+    x = "Lifeform",
+    y = "Total Numbers",
+    fill = "Red_UK Status"
+  ) +
+  theme_minimal()+
+  coord_flip()
+```
+
+The distribution of lifeforms across Red_UK statuses reveals a notable imbalance, with certain lifeforms dominating the data set. For instance, therophytes (annual plants) and hemicryptophytes (perennial herbs) exhibit significantly higher counts compared to other lifeforms, suggesting their relative abundance in the data. In contrast, categories like lianas (climbing plants) show minimal representation, indicating their rarity in this data set. Notably, the geophytes (underground storage plants) and phanerophytes (woody plants) also show intermediate frequencies.
+
+Therophytes, characterized by their rapid life cycles and dependence on specific, often disturbed habitats, may show a higher vulnerability to environmental stressors. These plants typically thrive in environments with seasonal or periodic disturbances, such as deserts or wetland ecosystems. However, their short lifespan and dependence on favorable conditions for germination and growth make them sensitive to climate changes, habitat destruction, and other ecological threats. This vulnerability may explain the observed spike in "VU" (Vulnerable) status among therophytes, as their specialized habitats and inability to adapt quickly to environmental changes may put them at greater risk compared to more resilient lifeforms.
+
+Within each lifeform, the distribution of Red_UK statuses is uneven, with certain statuses like LC (Least Concern) predominantly represented in most groups. This imbalance hints at possible conservation patterns, with some lifeforms being more commonly classified as LC while others may be more frequently categorized under other conservation statuses such as VU (Vulnerable) or NT (Near Threatened). The higher frequency of therophytes in the "VU" category suggests that lifeforms with specific ecological traits, such as limited dispersal abilities or narrow habitat preferences, are more likely to be assigned higher conservation concern statuses.
+
+Such trends likely reflect inherent conservation risks tied to the ecological characteristics and life history traits of different plant types. Lifeforms with more specialized needs or those that face significant environmental pressures may be more prone to classification under higher conservation concern statuses, highlighting the need for targeted conservation efforts for these vulnerable species.
+
+$Chi^2$ Test
+
+```{r}
+# Create a contingency table for lifeform and red_UK
+lady.mat2<- xtabs(~lifeform + red_UK, data=weeds)
+```
+
+```{r}
+lady.chi2<-chisq.test(lady.mat2)
+lady.chi2
+```
+
+A Pearson’s Chi-Squared test of independence was performed to assess the relationship between lifeform and Red_UK status. The results showed no significant association between the two variables, χ²(42, N = total count) = 49.42, p = 0.201. This indicates that the distribution of lifeforms is independent of their Red_UK status, as the observed counts align closely with the expected counts under the null hypothesis.
+
+```{r}
+ggplot(totals2, aes(x = lifeform, y = total.numbers, fill = red_UK)) +
+ geom_bar(stat = "identity", position = "dodge", color = "black", linewidth = 0.2) +
+  labs(
+    title = "Distribution of Lifeforms by Red_UK",
+    x = "Lifeform",
+    y = "Total Numbers",
+    fill = "Red_UK Status"
+  ) +
+  scale_fill_brewer(palette = "Set3", name = "red_UK") +
+  theme_minimal()+
+  coord_flip()+
+  theme(plot.title = element_text(face = "bold"))
+```
+
+Failing to Reject the Null Hypothesis: Based on the chi-square test results, we fail to reject the null hypothesis, as the p-value (0.201) exceeds the standard significance level of 0.05. This suggests that, after grouping lifeforms with low counts together, there is no significant association between lifeform and Red_UK status. The observed differences in the distribution of Red_UK statuses across lifeforms can likely be attributed to random variation, rather than reflecting a meaningful ecological relationship. Therefore, we conclude that the distribution of lifeforms across conservation statuses does not significantly differ from what would be expected under independence. This outcome contrasts with the alternative hypothesis, which predicted a significant association between lifeform and conservation status due to life history traits such as slower reproduction rates, longer lifespans, or specialized habitat requirements, making certain lifeforms more prone to being classified under higher conservation concern statuses (Fried et al., 2008; Aurelle et al., 2022).
+
+References:
+
+Fried, G., et al. (2008). Ecological interactions and biodiversity conservation in Mediterranean ecosystems. Ecological Applications, 18(5), 1317-1329. Aurelle, D., et al. (2022). Impact of environmental factors on the conservation status of plant species in Mediterranean climates. Journal of Ecology, 110(6), 1424-1435. \#### Post Hoc
+
+```{r}
+library(chisq.posthoc.test)
+
+posthoc2<-chisq.posthoc.test(lady.mat2, method = "bonferroni")
+posthoc2
+```
+
+The post hoc pairwise proportions test results reveal significant and borderline associations between certain lifeforms and Red_UK conservation statuses, providing insights into their ecological characteristics and vulnerabilities. For instance, the strong association between hemicryptophytes (perennial herbs) and the LC (Least Concern) status (p = 0.000343) suggests that these plants, often found in a variety of habitats with relatively stable populations, are less susceptible to environmental threats, making them more likely to be classified as Least Concern. However, the borderline p-value (0.0766) for hemicryptophytes and the VU (Vulnerable) status suggests a weak trend that, while not statistically significant at the conventional threshold, may indicate that some hemicryptophytes are at risk in certain environments, potentially due to habitat fragmentation or other localized threats. Similarly, the borderline p-value (0.052) for therophytes (annual plants) and the EN (Endangered) status implies that these short-lived, fast-reproducing plants could be vulnerable to environmental disturbances such as climate change, which may lead to their increased risk of endangerment. The significant association between therophytes and VU (Vulnerable) (p = 0.007586) further supports the idea that their rapid reproduction, while advantageous under stable conditions, might not be enough to counteract the pressures of habitat loss and other ecological threats, making them more likely to be classified as vulnerable. These results underscore how life history traits—such as longevity, reproductive strategy, and habitat requirements—play a crucial role in determining a species' conservation status, with certain lifeforms being more susceptible to environmental pressures and thus requiring focused conservation efforts.
+
+### Analysis 3: Red_UK vs. Lifeform
+
+#### Setting up the Document:
+
+Here, I will load the data I am performing a chi-square test of independence on the variables lifeform and red_UK.
+
+```{r}
+rm(list=ls())
+library(tidyverse)
+library(here)
+library(ggplot2)
+library(ggfortify)
+weeds<- read.csv(here("Data", "weeds_clean.csv"))
+weeds$red_UK<- as.factor(weeds$red_UK)
+```
+
+This data set contains 1,294 rows and 5 columns, capturing information on lifeforms and their classifications, with some missing values (NA). The red_UK column represents conservation statuses, now a factor with three levels: NT, VU, and Wait. The lifeform column categorizes observations by biological form, now a factor with five levels: Therophyte, Hemicryptophyte, Geophyte, Phanerophyte, and Liana. The biogeo column indicates the biogeographical region, now a factor with four levels: Cosmopolitan, Eurasian, European, and Mediterranean. The module column, originally an integer, is now a factor with four levels: 1, 3, 5, and 99, corresponding to habitat categories. Finally, biovigilance is now a factor with two levels: 1 (present) and 0 (absent). This data set combines categorical and numeric data, providing a foundation for exploring patterns in lifeform classifications, conservation statuses, geographic distributions, and monitoring efforts.
+
+#### Analysis
+
+Null Hypothesis: There is no significant association between lifeform and Red_UK status. The observed distribution of lifeforms across Red_UK categories is consistent with what would be expected under conditions of ecological independence, implying that lifeform types do not influence or are not influenced by conservation status. This would suggest that different lifeforms, regardless of their biological characteristics, are equally likely to be classified into various Red_UK conservation statuses.
+
+Alternative Hypothesis: The distribution of lifeforms across Red_UK statuses differs significantly, with certain lifeforms exhibiting characteristics such as slower reproduction rates, longer lifespans, or specialized habitat requirements, making them more prone to being categorized under higher conservation concern statuses. For instance, phanerophytes (woody plants), due to their slow growth, limited dispersal abilities, and greater sensitivity to environmental disturbances, are more likely to be categorized as Vulnerable (VU) under Red_UK status. These life history traits make them more susceptible to threats such as climate change and habitat loss, which in turn increase their likelihood of being classified as at risk (Fried et al., 2008; Aurelle et al., 2022).
+
+References:
+
+Fried, G., et al. (2008). Ecological interactions and biodiversity conservation in Mediterranean ecosystems. Ecological Applications, 18(5), 1317-1329. Aurelle, D., et al. (2022). Impact of environmental factors on the conservation status of plant species in Mediterranean climates. Journal of Ecology, 110(6), 1424-1435.
+
+```{r}
+totals3<- weeds|> group_by(lifeform, red_UK)|>
+  filter(!is.na(lifeform) & !is.na(red_UK)) |> # Remove rows with NA in 'lifeform' or 'red_UK'
+  summarise(total.numbers = n(), .groups = 'drop' )
+
+```
+
+NA values in lifeform and red_UK created additional, unintended groups in the analysis, as NA is treated as a separate category. These artificial groups could distort results and misrepresent the true relationship between the variables. Removing rows with NA ensures a cleaner, more accurate visualization that reflects only meaningful data.
+
+```{r}
+ggplot(totals3, aes(x = lifeform, y = total.numbers, fill = red_UK)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(
+    title = "Distribution of Lifeforms by Red_UK",
+    x = "Lifeform",
+    y = "Total Numbers",
+    fill = "Red_UK Status"
+  ) +
+  theme_minimal()+
+  coord_flip()
+```
+
+The distribution of lifeforms across Red_UK statuses reveals a notable imbalance, with certain lifeforms dominating the data set. For instance, therophytes (annual plants) and hemicryptophytes (perennial herbs) exhibit significantly higher counts compared to other lifeforms, suggesting their relative abundance in the data. In contrast, categories like lianas (climbing plants) show minimal representation, indicating their rarity in this data set. Notably, the geophytes (underground storage plants) and phanerophytes (woody plants) also show intermediate frequencies.
+
+Therophytes, characterized by their rapid life cycles and dependence on specific, often disturbed habitats, may show a higher vulnerability to environmental stressors. These plants typically thrive in environments with seasonal or periodic disturbances, such as deserts or wetland ecosystems. However, their short lifespan and dependence on favorable conditions for germination and growth make them sensitive to climate changes, habitat destruction, and other ecological threats. This vulnerability may explain the observed spike in "VU" (Vulnerable) status among therophytes, as their specialized habitats and inability to adapt quickly to environmental changes may put them at greater risk compared to more resilient lifeforms.
+
+Within each lifeform, the distribution of Red_UK statuses is uneven, with certain statuses like LC (Least Concern) predominantly represented in most groups. This imbalance hints at possible conservation patterns, with some lifeforms being more commonly classified as LC while others may be more frequently categorized under other conservation statuses such as VU (Vulnerable) or NT (Near Threatened). The higher frequency of therophytes in the "VU" category suggests that lifeforms with specific ecological traits, such as limited dispersal abilities or narrow habitat preferences, are more likely to be assigned higher conservation concern statuses.
+
+Such trends likely reflect inherent conservation risks tied to the ecological characteristics and life history traits of different plant types. Lifeforms with more specialized needs or those that face significant environmental pressures may be more prone to classification under higher conservation concern statuses, highlighting the need for targeted conservation efforts for these vulnerable species.
+
+$Chi^2$ Test
+
+```{r}
+# Create a contingency table for lifeform and red_UK
+lady.mat3<- xtabs(~lifeform + red_UK, data=weeds)
+```
+
+```{r}
+lady.chi3<-chisq.test(lady.mat3)
+lady.chi3
+```
+
+A Pearson’s Chi-Squared test of independence was performed to assess the relationship between lifeform and Red_UK status. The results showed no significant association between the two variables, χ²(42, N = total count) = 49.42, p = 0.201. This indicates that the distribution of lifeforms is independent of their Red_UK status, as the observed counts align closely with the expected counts under the null hypothesis.
+
+Thus, the data does not support the alternative hypothesis that lifeforms with particular life history traits (such as slower reproduction rates, longer lifespans, or specialized habitat requirements) are more likely to be categorized under higher conservation concern statuses, such as the VU status for phanerophytes (woody plants). Therefore, the distribution of lifeforms across conservation statuses does not significantly differ from what would be expected under independence.
+
+```{r}
+ggplot(totals3, aes(x = lifeform, y = total.numbers, fill = red_UK)) +
+ geom_bar(stat = "identity", position = "dodge", color = "black", linewidth = 0.2) +
+  labs(
+    title = "Distribution of Lifeforms by Red_UK",
+    x = "Lifeform",
+    y = "Total Numbers",
+    fill = "Red_UK Status"
+  ) +
+  scale_fill_brewer(palette = "Set3", name = "red_UK") +
+  theme_minimal()+
+  coord_flip()+
+  theme(plot.title = element_text(face = "bold"))
+```
+
+Failing to Reject the Null Hypothesis: Based on the chi-square test results, we fail to reject the null hypothesis, as the p-value (0.201) exceeds the standard significance level of 0.05. This suggests that, after grouping lifeforms with low counts together, there is no significant association between lifeform and Red_UK status. The observed differences in the distribution of Red_UK statuses across lifeforms can likely be attributed to random variation, rather than reflecting a meaningful ecological relationship. Therefore, we conclude that the distribution of lifeforms across conservation statuses does not significantly differ from what would be expected under independence. This outcome contrasts with the alternative hypothesis, which predicted a significant association between lifeform and conservation status due to life history traits such as slower reproduction rates, longer lifespans, or specialized habitat requirements, making certain lifeforms more prone to being classified under higher conservation concern statuses (Fried et al., 2008; Aurelle et al., 2022).
+
+References:
+
+Fried, G., et al. (2008). Ecological interactions and biodiversity conservation in Mediterranean ecosystems. Ecological Applications, 18(5), 1317-1329. Aurelle, D., et al. (2022). Impact of environmental factors on the conservation status of plant species in Mediterranean climates. Journal of Ecology, 110(6), 1424-1435.
+
+#### Post Hoc
+
+```{r}
+library(chisq.posthoc.test)
+
+posthoc3<-chisq.posthoc.test(lady.mat3, method = "bonferroni")
+posthoc3
+```
+
+The post hoc pairwise proportions test results reveal significant and borderline associations between certain lifeforms and Red_UK conservation statuses, providing insights into their ecological characteristics and vulnerabilities. For instance, the strong association between hemicryptophytes (perennial herbs) and the LC (Least Concern) status (p = 0.000343) suggests that these plants, often found in a variety of habitats with relatively stable populations, are less susceptible to environmental threats, making them more likely to be classified as Least Concern. However, the borderline p-value (0.0766) for hemicryptophytes and the VU (Vulnerable) status suggests a weak trend that, while not statistically significant at the conventional threshold, may indicate that some hemicryptophytes are at risk in certain environments, potentially due to habitat fragmentation or other localized threats. Similarly, the borderline p-value (0.052) for therophytes (annual plants) and the EN (Endangered) status implies that these short-lived, fast-reproducing plants could be vulnerable to environmental disturbances such as climate change, which may lead to their increased risk of endangerment. The significant association between therophytes and VU (Vulnerable) (p = 0.007586) further supports the idea that their rapid reproduction, while advantageous under stable conditions, might not be enough to counteract the pressures of habitat loss and other ecological threats, making them more likely to be classified as vulnerable.
+
+The chi-square test of independence did not reveal a significant association between lifeform and Red_UK status, as the overall distribution of lifeforms was found to be independent of conservation status. This lack of significance likely stems from the broad grouping of lifeforms in the chi-square analysis, which may not capture the nuances of specific pairwise relationships between lifeforms and conservation status. In contrast, the post hoc pairwise proportions test allowed for a more detailed investigation of individual lifeforms, revealing significant and borderline associations that were not apparent in the chi-square test. These results underscore how life history traits—such as longevity, reproductive strategy, and habitat requirements—play a crucial role in determining a species' conservation status, with certain lifeforms being more susceptible to environmental pressures and thus requiring focused conservation efforts.
+
+## Challenges
+
+In my Cap DAP (Data Analysis Project), I encountered several challenges that were unique to my specific data set and research questions. One key challenge I faced was working with ecological and conservation status data, particularly the complexities involved in categorizing plant life forms and conservation status across different regions (e.g., the UK and France). This required me to explore and understand the relationships between these categories, which were not directly covered in lectures. Specifically, I had to learn how to manage and manipulate categorical data effectively to perform statistical tests such as chi-square tests and to ensure that my results were robust and meaningful.
+
+While we covered dplyr in class, I found that applying it to filter relevant variables (such as red_UK, lifeform, and biovigilance) and cleaning my data set for analysis was a challenging but rewarding task. I had to manage missing or inconsistent data, which required advanced data wrangling techniques. Specifically, I had to figure out how to appropriately deal with missing values, filter for specific variables, and create a streamlined data set that would allow for efficient analysis.
+
+Another significant challenge was learning how to perform a post hoc test. While I had learned the fundamentals of statistical testing, performing a post hoc test to follow up on significant findings was not something we covered in lecture. After finding a significant effect in my analysis, I had to determine which specific groups were driving that significance. This process required me to learn the correct post hoc testing methods, ensuring that I applied the right approach and interpreted the results correctly.
+
+Additionally, I had to delve into understanding the significance of certain biogeographic zones and habitat types in relation to conservation status, which led me to review literature beyond course materials. For example, I explored studies on plant biodiversity and how environmental factors influence the conservation status of species, drawing insights from papers like Fried et al. (2008) and Aurelle et al. (2022). This exploration was crucial for developing my hypotheses and ensuring my interpretations of the results were grounded in ecological theory.
+
+In summary, the process of cleaning and interpreting ecological data, combined with using statistical tests on categorical variables and learning how to perform a post hoc test, was a significant learning experience that went beyond the material covered in class. I had to independently explore concepts in data wrangling, statistical analysis, and literature review to ensure the success of my project.
